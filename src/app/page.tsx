@@ -3,7 +3,7 @@ import React, { useState } from "react";
 
 export default function AreaConverter() {
   // Global (standard) factors in square-feet per unit (used as fallback)
-  const globalFactors = {
+  const globalFactors: Record<string, number> = {
     sqft: 1,
     sqm: 10.76391041671,
     sqyd: 9,
@@ -19,7 +19,7 @@ export default function AreaConverter() {
   };
 
   // State-specific overrides (sqft-per-unit)
-  const stateOverrides = {
+  const stateOverrides: Record<string, Record<string, number>> = {
     "Uttar Pradesh": { bigha: 27225, katha: 1361.25 },
     Bihar: { bigha: 27211, katha: 1360.5 },
     "West Bengal": { bigha: 14400, katha: 720 },
@@ -36,7 +36,7 @@ export default function AreaConverter() {
     "Himachal Pradesh": { bigha: 8712, katha: 1089, biswa: 436 },
     Uttarakhand: { bigha: 6804, katha: 1360.8 },
     Gujarat: { bigha: 17424, vigha: 17424 },
-    Andhra_Pradesh: { ankanam: 72, bigha: 17424, katha: 3025 },
+    "Andhra Pradesh": { ankanam: 72, bigha: 17424, katha: 3025 }, // fixed key
     Telangana: { ankanam: 72, bigha: 17424, katha: 3025 },
   };
 
@@ -101,17 +101,19 @@ export default function AreaConverter() {
     { name: "Vigha", value: "vigha" },
   ];
 
-  const [state, setState] = useState(states[0]);
-  const [fromUnit, setFromUnit] = useState("sqft");
-  const [toUnit, setToUnit] = useState("acre");
-  const [inputValue, setInputValue] = useState(1);
-  const [result, setResult] = useState("");
-  const [error, setError] = useState("");
+  const [state, setState] = useState<string>(states[0]);
+  const [fromUnit, setFromUnit] = useState<string>("sqft");
+  const [toUnit, setToUnit] = useState<string>("acre");
+  // store input as string because the <input> yields strings
+  const [inputValue, setInputValue] = useState<string>("1");
+  const [result, setResult] = useState<string>("");
+  const [error, setError] = useState<string>("");
 
   const convertArea = () => {
     setError("");
     setResult("");
 
+    // parse safely (empty string -> NaN)
     const input = parseFloat(inputValue);
     if (Number.isNaN(input)) {
       setError("Please enter a valid number");
@@ -122,17 +124,19 @@ export default function AreaConverter() {
       return;
     }
 
+    // Prefer state override, otherwise fallback to global factors
+    const stateFactorMap = stateOverrides[state];
     const fromFactor =
-      stateOverrides[state] && stateOverrides[state][fromUnit] !== undefined
-        ? stateOverrides[state][fromUnit]
+      stateFactorMap && typeof stateFactorMap[fromUnit] === "number"
+        ? stateFactorMap[fromUnit]
         : globalFactors[fromUnit];
-
     const toFactor =
-      stateOverrides[state] && stateOverrides[state][toUnit] !== undefined
-        ? stateOverrides[state][toUnit]
+      stateFactorMap && typeof stateFactorMap[toUnit] === "number"
+        ? stateFactorMap[toUnit]
         : globalFactors[toUnit];
 
-    if (!fromFactor || !toFactor) {
+    // ensure numeric factors exist
+    if (typeof fromFactor !== "number" || typeof toFactor !== "number") {
       setError(
         "Conversion not available for selected units in this state yet."
       );
