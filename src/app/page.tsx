@@ -152,7 +152,10 @@ export default function AreaConverter() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
+   <div
+  className="min-h-screen bg-cover bg-center"
+  style={{ backgroundImage: "url('/backgroundImg.jpeg')" }}
+>
       {/* Navbar */}
       <nav className="bg-white shadow-md px-6 py-3 flex items-center">
         <a
@@ -166,7 +169,7 @@ export default function AreaConverter() {
             alt="Gharpadharo Logo"
             className="h-12 w-auto"
           />
-          <span className="text-lg font-semibold text-black-700">
+          <span className="text-md font-semibold text-black-700">
             GharPadharo
           </span>
         </a>
@@ -229,7 +232,8 @@ export default function AreaConverter() {
             </div>
 
             <div className="flex items-center justify-center w-12 h-12 bg-purple-200 rounded-full text-blue-700 text-xl mt-5">
-              ↔
+             ↔
+             
             </div>
 
             <div className="flex-1">
@@ -251,7 +255,7 @@ export default function AreaConverter() {
           {/* Convert button */}
           <button
             onClick={convertArea}
-            className="w-full bg-[#4B3F72] text-white py-2 rounded-md mb-3"
+            className="w-full bg-[#4B3F72] text-white py-2 rounded-md mb-3   hover:bg-[#3b2f5d] hover:scale-105 transition-all duration-200 ease-in-out"
           >
             Convert
           </button>
